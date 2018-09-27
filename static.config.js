@@ -5,9 +5,7 @@ const matter = require('gray-matter')
 
 // Paths Aliases defined through tsconfig.json
 const typescriptWebpackPaths = require('./webpack.config.js')
-
-console.log('hello')
-
+const ExtractTextPlugin = require('extract-text-webpack-plugin')
 
 function getPosts() {
   const items = []
@@ -52,6 +50,7 @@ function getPosts() {
 }
 
 export default {
+  entry: path.join(__dirname, 'src/index.tsx'),
   getSiteData: () => ({
     title: 'React Static with Netlify CMS',
   }),
@@ -87,15 +86,14 @@ export default {
   },
 
   webpack: (config, { defaultLoaders }) => {
-
-    config.entry.splice(-1, 1, path.join(__dirname, 'src/index.tsx'))
-
     // Add .ts and .tsx extension to resolver
     config.resolve.extensions.push('.ts', '.tsx')
 
     // Add TypeScript Path Mappings (from tsconfig via webpack.config.js)
     // to react-statics alias resolution
     config.resolve.alias = typescriptWebpackPaths.resolve.alias
+
+    config.plugins.push(new ExtractTextPlugin("styles.css"))
 
     // We replace the existing JS rule with one, that allows us to use
     // both TypeScript and JavaScript interchangeably
